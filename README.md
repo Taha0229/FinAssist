@@ -28,35 +28,52 @@ Go to the landing page and initialize a thread. Wait a few seconds, to get redir
     - Initialize a new Next.js project.
     - Install necessary dependencies for OpenAI integration and streaming text functionality.
 
-    * implemented the latest version of `Next.js` with other dependencies including `framer-motion`, `openai`, `react-markdown`, and `react-icons` 
+    1. implemented the latest version of `Next.js` with other dependencies including `framer-motion`, `openai`, `react-markdown`, and `react-icons` 
 
 2. **API Integration**
     - Configure the OpenAI API key securely.
-    * Secured all the API on environment variables
+    1. Secured all the API on environment variables
     - Integrate OpenAI's API to enable chatbot functionality.
-    * integrated `gpt-3.5-turbo` with agents, threads, and streaming capabilities
+    2. integrated `gpt-3.5-turbo` with agents, threads, and streaming capabilities
 
 3. **Chatbot Development**
     - Implement the chatbot to support:
         - Streaming text responses.
-        * Manually configured the streaming capability using `ReadableStream` backed by asynchronous programming
+        1. Manually configured the streaming capability using `ReadableStream` backed by asynchronous programming
         - Continued conversations using [threads](https://platform.openai.com/docs/api-reference/threads).
-        * Implemented multi-thread agent, use the model from heterogeneous devices at scale.
+        2. Implemented multi-thread agent, use the model from heterogeneous devices at scale.
     - Ensure the chatbot renders responses in an interactive and user-friendly manner.
     * Crafted uncompromisng UI with `Next.Js`, `NextUI` and `TailwindCSS` with markdown support using `react-markdown`
 
 4. **Mock API Response Handling**
     - Fetch and parse the provided mock API response.
-    * Tried to mimic actual API calling with the help of mock API.
+    1. Tried to mimic actual API calling with the help of mock API.
     - When the chatbot is opened, it should present a summary of the recommendation based on the mock response.
-    * get hands on the analyzed results with memory enabled agent.
+    2. get hands on the analyzed results with memory enabled agent.
 
 5. **User Interaction Flow**
     - Display an initial summary of the recommendation from the mock API response.
     - Allow users to ask follow-up questions and provide detailed answers based on the parsed data.
-    * view analysis summary immediately after starting the model, ask anything around the cloud infrastructures backed by uniquely created prompts
+    1. view analysis summary immediately after starting the model, ask anything around the cloud infrastructures backed by uniquely created prompts
 6. **Error Handling and Optimization**
     - Implement error handling for API requests.
-    * curated error handling functionalities while calling APIs
+    1. curated error handling functionalities while calling APIs
     - Optimize the chatbot’s performance and responsiveness.
-    * Following DRY and avoiding premature optimization
+    2. Following DRY and avoiding premature optimization
+
+
+## GitHub commit message format
+
+Feat– feature
+
+Fix– bug fixes
+
+Docs– changes to the documentation like README
+
+Style– style or formatting change
+
+Perf – improves code performance
+
+Test– test a feature
+
+Example: `git commit -m "Docs: add readme"` or `git commit -m "Feat: add chatting interface"`
