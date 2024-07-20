@@ -26,11 +26,11 @@ export default function NavBar() {
     },
     {
       name: "Github",
-      link: "/about",
+      link: "https://github.com/Taha0229/FinAssist",
     },
     {
       name: "Documentation",
-      link: "/products",
+      link: "https://github.com/Taha0229/FinAssist#finassist-analyze-your-cloud-infrastructure-on-the-fly",
     },
   ];
 
@@ -42,7 +42,7 @@ export default function NavBar() {
           className="sm:hidden"
         />
         <NavbarBrand onClick={() => router.push("/")} className="cursor-pointer md:space-x-2" >
-          {/* <Image src={"/images/main_logo.png"} alt="logo" width={50} height={50}/> */}
+          
           <AcmeLogo/>
           <p className="font-bold text-inherit text-pretty text-center">FinAssist</p>
         </NavbarBrand>

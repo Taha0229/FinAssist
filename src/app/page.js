@@ -1,9 +1,9 @@
 "use client";
 import { Button } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 
-const page = () => {
+const Home = () => {
   // Landing page which also initializes threads and agents
 
   const router = useRouter();
@@ -49,6 +49,7 @@ const page = () => {
     
     setMessage("Navigating...");
     // redirect to the chatting interface
+    
     router.push(`/chat?thread_id=${threadId}`);
   };
 
@@ -62,4 +63,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Home;
