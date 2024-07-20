@@ -6,12 +6,12 @@ const openai = new OpenAI({
 });
 
 export async function POST(req, { params }) {
-  console.log("print response");
 
+  // destructure props/request body
   const { userMessage, thread_id, assistant_id } = await req.json();
-  console.log("message: ", userMessage);
 
-  const assistantId = "asst_aLa87poebmzuZDPmFcNFKnt8";
+  // setup basic requirements
+  const assistantId = process.env.ASSISTANT_ID;
   let threadId;
   let messageValue;
 
@@ -59,12 +59,16 @@ export async function POST(req, { params }) {
   };
 
   const handleRun = async (threadId, messageContent) => {
+    // light weight and straightforward function to handle initial thread loading and continuous chat
+
+    // get the user message
     const message = await openai.beta.threads.messages.create(threadId, {
       role: "user",
       content: messageContent,
       metadata: { by: "human" },
     });
 
+    // set up the instruction for the agent
     const instruction = `You are professional cloud resource analyzer. Your name is FinAssist. Your task is to help the user to analyze their cloud infrastructure and guide them on how to optimize the infrastructure and how to cut down the cost.
       The user will provide you the details of their cloud infrastructure is a json format and will ask questions related to that. You will respond in the asked format.`;
 
@@ -74,11 +78,8 @@ export async function POST(req, { params }) {
       instructions: instruction,
       stream: true,
     });
-    console.log("run---------------------------------------------------");
-    console.log(run);
 
     return run;
- 
   };
 
   if (thread_id) {
@@ -107,37 +108,28 @@ export async function POST(req, { params }) {
     messageValue = prompt;
   }
 
+  // get the streamer
   const streamer = await handleRun(threadId, messageValue);
-  if (true) {
-    // const lastMessage = MessagesList[0].content[0].text;
-    // lastMessage["by"] = "ai"
 
-    // for await (let chunk of streamer){
-    //   if (chunk.event === "thread.message.delta"){
-    //     console.log(chunk.data.delta.content[0]);
-    //   }
-    // }
-    return new Response(
-      new ReadableStream({
-        async start(controller) {
-          controller.enqueue(JSON.stringify({ threadId }) + "\n");
-          for await (let chunk of streamer) {
-            if (chunk.event === "thread.message.delta") {
-              controller.enqueue(
-                JSON.stringify(chunk.data.delta.content[0]) + "\n"
-              );
-            }
+  // Stream out the completion
+  return new Response(
+    new ReadableStream({
+      async start(controller) {
+        controller.enqueue(JSON.stringify({ threadId }) + "\n");
+        for await (let chunk of streamer) {
+          if (chunk.event === "thread.message.delta") {
+            controller.enqueue(
+              JSON.stringify(chunk.data.delta.content[0]) + "\n"
+            );
           }
-          controller.close();
-        },
-      }),
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-  } else {
-    return Response.json({ response: "Try again" }, { status: 500 });
-  }
+        }
+        controller.close();
+      },
+    }),
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
 }

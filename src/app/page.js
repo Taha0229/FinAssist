@@ -1,17 +1,21 @@
 "use client";
 import { Button } from "@nextui-org/react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 const page = () => {
+  // Landing page which also initializes threads and agents
+
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("Start a new thread");
 
   const initializeThread = async () => {
+    // handle loading state
     setLoading(true);
     setMessage("Initializing...");
+
+    // make a POST request to initialize thread and generate cloud summary
     const res = await fetch("/api/chatAPI", {
       method: "POST",
       headers: {
@@ -34,16 +38,17 @@ const page = () => {
         try {
           const parsed = JSON.parse(line);
           if (parsed.threadId) {
-            console.log("exists");
+            // in this case we are interested in thread_id rather than the generated completion
             threadId = parsed.threadId;
           }
-        } catch (error) {
+        } catch (error) { // handle error
           console.error("Failed to parse JSON:", error);
         }
       }
     }
-    console.log(threadId);
+    
     setMessage("Navigating...");
+    // redirect to the chatting interface
     router.push(`/chat?thread_id=${threadId}`);
   };
 

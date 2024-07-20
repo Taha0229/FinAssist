@@ -5,16 +5,18 @@ const openai = new OpenAI({
 });
 
 export async function GET(req) {
+  // get the search params to fetch chat history
+
   const searchParams = req.nextUrl.searchParams;
   const threadId = searchParams.get("thread_id");
-  console.log("threadId: ", threadId);
 
   //Display the Assistant's Response
   const messagesNew = await openai.beta.threads.messages.list(threadId, {
     order: "asc",
   });
-  console.log("messagesNew : ");
   
+
+  // setup the messages list to make it easy to separate AI and human responses
   const messagesList = messagesNew.data.map((m) => {
     const text = m.content[0].text;
     if (m.metadata.by) {
@@ -22,12 +24,12 @@ export async function GET(req) {
         ...text,
         ...m.metadata,
       };
-      console.log("meta exists");
       return newObj;
     }
     return text;
   });
 
+  // neglect the first user message (treated as the system message)
   messagesList.shift();
 
   return Response.json({ chatHistory: messagesList }, { status: 200 });

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaArrowUp } from "react-icons/fa6";
 import { useSearchParams } from "next/navigation";
 import Message from "../components/Chat/message";
@@ -9,14 +9,16 @@ import ReactMarkdown from "react-markdown";
 
 export default function Chat() {
   const [message, setMessage] = useState("");
-  const [completion, setCompletion] = useState("");
   const [chatHistory, setChatHistory] = useState([]);
   const searchParams = useSearchParams();
   const thread_id = searchParams.get("thread_id");
   const [response, setResponse] = useState([]);
 
   useEffect(() => {
+
+    // fetching conversation history based on thread id
     const fetchData = async () => {
+      
       try {
         const response = await fetch(`/api/fetchChats?thread_id=${thread_id}`, {
           method: "GET",
@@ -25,9 +27,9 @@ export default function Chat() {
           throw new Error("Network response was not ok");
         }
         const chatHist = await response.json();
-        console.log(chatHist);
+        
         setChatHistory(chatHist.chatHistory);
-      } catch (error) {
+      } catch (error) { // handle error
         console.error("Error fetching chat history:", error);
       }
     };
@@ -35,15 +37,22 @@ export default function Chat() {
   }, []);
 
   function handleChangeMessage(e) {
+    // handle input query
     setMessage(e.target.value);
   }
 
   async function handleSubmit() {
+    // handle submit function
+
     setMessage("");
+
+    //update the chat history based on the backend for human
     setChatHistory([
       ...chatHistory,
       { value: message, annotations: [], by: "human" },
     ]);
+
+    // send POST data to the backend
     const res = await fetch("/api/chatAPI", {
       method: "POST",
       headers: {
@@ -51,12 +60,14 @@ export default function Chat() {
       },
       body: JSON.stringify({ userMessage: message, thread_id }),
     });
-    console.log(res);
-
+    
+    // setup streaming
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     let done = false;
     let responses = [];
+
+    // completion for after streaming
     let completion = "";
 
     while (!done) {
@@ -66,13 +77,19 @@ export default function Chat() {
       const lines = chunk.split("\n").filter(Boolean); // Split by newline and filter out empty strings
       for (const line of lines) {
         const parsed = JSON.parse(line);
+
+        // the API sends thread_id as well as the streaming completion, here we are interested only in the streaming
         if (parsed.text) {
           responses.push(parsed);
           completion += parsed.text.value;
         }
+
+        // update completion
         setResponse([...responses]);
       }
     }
+
+    // update chatting history when streaming is completed
     if (done === true) {
       const data = {
         value: completion,
@@ -82,6 +99,8 @@ export default function Chat() {
       setChatHistory((prevChatHistory) => [...prevChatHistory, data]);
     }
   }
+
+
   return (
     <div className="w-dvw border ">
       <div className="flex h-full  justify-center px-40">
